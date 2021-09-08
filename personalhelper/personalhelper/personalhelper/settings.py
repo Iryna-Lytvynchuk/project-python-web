@@ -1,3 +1,4 @@
+import os
 """
 Django settings for personalhelper project.
 
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j8ms2sff9(duk#97m3kf0rdpg5udbaj9m1g#$35g%@v$i9!ofa'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'contacts.apps.ContactsConfig',
     'notes.apps.NotesConfig',
+    'users_files.apps.UsersFilesConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,8 +82,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'web-project',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
         'HOST': '82.193.125.109',
         'PORT': '5432',
     }
@@ -139,5 +142,15 @@ DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
 
 SFTP_STORAGE_HOST = '82.193.125.109'
 SFTP_STORAGE_ROOT = '/home/'
-SFTP_STORAGE_PARAMS = {'username': 'dev_users', 'password': 'dev_2021'}
+SFTP_STORAGE_PARAMS = {'username': os.getenv(
+    'SFTP_STORAGE_USER'), 'password': os.getenv('SFTP_STORAGE_PASSWORD')}
 SFTP_STORAGE_INTERACTIVE = False
+
+
+LOGIN_REDIRECT_URL = "contacts:index"
+LOGOUT_REDIRECT_URL = "contacts:index"
+
+
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 1025
+

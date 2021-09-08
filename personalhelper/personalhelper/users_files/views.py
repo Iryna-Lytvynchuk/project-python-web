@@ -21,7 +21,7 @@ def add_file(request):
         print(mimetypes.guess_type(filename.name))
         if form.is_valid():
             form.save()
-        return redirect('index')
+        return redirect('userfiles')
     else:
         form = UserFileAdd(initial={'user': request.user})
     return render(request, 'users_files/add.html', {'form': form})
@@ -29,6 +29,12 @@ def add_file(request):
 
 class UsersFilesView(generic.ListView):
     model = UserFile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['userfile_list'] = UserFile.objects.filter(
+            user_id=self.request.user.id)
+        return context
 
 
 def download_file(request, filename):

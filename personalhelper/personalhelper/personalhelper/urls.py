@@ -21,9 +21,10 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('contacts/', include('contacts.urls')),
-    #path('', RedirectView.as_view(url='/contacts/', permanent=True)),
+    path('contacts/', include('contacts.urls', namespace='contacts')),
+    path('', RedirectView.as_view(url='/contacts/', permanent=True)),
+    path('users/', include('users.urls')),
+    path('users_files/', include('users_files.urls')),
     path('files/', include('contacts.urls')),
-    path('notes/', include('notes.urls')),
-] + static(settings.STATIC_URL, document_root= settings.STATIC_ROOT)
-
+    path('notes/', include(('notes.urls', 'notes'),  namespace='notes')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

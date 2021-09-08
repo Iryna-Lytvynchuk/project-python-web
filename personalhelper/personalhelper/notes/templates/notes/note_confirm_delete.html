@@ -1,0 +1,21 @@
+{% extends 'contacts/layout.html' %}
+
+{% block title %}Tag list{% endblock %}
+
+{% block header %}
+<h1>Tag List, {{user.username|default:'Guest'}}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="features">
+    <p> 
+    <p>Are you sure you want to delete the note: {{ note.title }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Yes, delete.">
+</form>
+
+</p>
+</div>
+{% endblock %}

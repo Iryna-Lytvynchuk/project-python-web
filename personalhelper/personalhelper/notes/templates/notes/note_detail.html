@@ -1,24 +1,36 @@
-{% extends "base.html" %}
+{% extends 'contacts/layout.html' %}
+{% block title %}Note{% endblock %}
+
+{% block header %}
+<h1>{{ note.title }}, {{user.username|default:'Guest'}}</h1>
+{% endblock %}
 
 {% block content %}
-  <h1>Title: {{ note.title }}</h1>
+<div class="features">
+    <p>
+      <p><strong>Author:</strong> username</p> <!-- author detail link not yet defined -->
+	  <p><strong>Tags:</strong></p>
+		{% if note.tags.all %}
+		  <ul>
+			{% for tag in note.tags.all %}
+			  <li>
+				<a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
+			  </li>
+			{% endfor %}
+		  </ul>
+		{% else %}
+			<p>There are no tags in this note.</p>
+		{% endif %}
 
-  <p><strong>Author:</strong> username</p> <!-- author detail link not yet defined -->
-  <p><strong>Tags:</strong></p>
-  	{% if note.tags.all %}
-	  <ul>
-		{% for tag in note.tags.all %}
-		  <li>
-			<a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
-		  </li>
-		{% endfor %}
-	  </ul>
-	{% else %}
-		<p>There are no tags in this note.</p>
-	{% endif %}
-
-  <div style="margin-left:20px;margin-top:20px">
-    <h4>Note:</h4>
-	{{ note.value }}
-  </div>
+        <h4>Note:</h4>
+	    {{ note.value }}
+	</p>	
+</div>
+<ul>
+	<li><a href="{% url 'note-update' note.id %}">Note update</a></li>
+	<li><a href="{% url 'note-delete' note.id %}">Note delete</a></li>
+</ul>
+>>>>>>> 67ee54b06ace65ffa2e64530e68fa327d6047f8c
+</p>
+</div>
 {% endblock %}

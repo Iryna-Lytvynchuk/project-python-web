@@ -1,7 +1,14 @@
-{% extends "base.html" %}
+{% extends 'contacts/layout.html' %}
+{% block title %}Tag list{% endblock %}
+
+
+{% block header %}
+<h1>Tag list, {{user.username|default:'Guest'}}</h1>
+{% endblock %}
 
 {% block content %}
-  <h1>Tag List</h1>
+<div class="features">
+    <p>
   {% if tag_list %}
   <ul>
     {% for tag in tag_list %}
@@ -13,4 +20,6 @@
   {% else %}
     <p>There are no tags in the profile.</p>
   {% endif %}
+    </p>
+</div>
 {% endblock %}

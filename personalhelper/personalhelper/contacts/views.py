@@ -1,4 +1,3 @@
-
 from django import template
 from django.db.models import fields
 from django.shortcuts import redirect, render
@@ -8,6 +7,7 @@ from django.template import loader
 from .forms import ContactForm, SearchForm, PhoneForm
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, UpdateView, DeleteView, CreateView
+from django.contrib.auth.decorators import login_required
 import re
 
 # Create your views here.
@@ -32,8 +32,9 @@ def phone_chek(new_value):
     else:
         new_value = new_value
 
+
 def index(request):
-    
+
     record_list = Contact.objects.all()
     template = loader.get_template('contacts/index.html')
     context = {
@@ -42,122 +43,123 @@ def index(request):
    # return HttpResponse(template.render(context, request))
     return render(request, 'contacts/index.html')
 
+
+@login_required
 def add_contact(request):
-    
+
     if request.method == 'POST':
         form = ContactForm(request.POST)
         form1 = PhoneForm(request.POST)
-        if form.is_valid():
-            if form1.is_valid():
-                name = form.cleaned_data.get('contact_name')
-                print(name)
-                email = form.cleaned_data.get('contact_email')
-                adress = form.cleaned_data.get('contact_adress')
-                birthday = form.cleaned_data.get('contact_birthday')
+        if form.is_valid() and form1.is_valid():
+            user = form.cleaned_data.get('user')
+            name = form.cleaned_data.get('contact_name')
+            email = form.cleaned_data.get('contact_email')
+            adress = form.cleaned_data.get('contact_adress')
+            birthday = form.cleaned_data.get('contact_birthday')
 
-                phone = form1.cleaned_data.get('phone')
-                phone_chek(phone)
-                form = Contact(contact_name = name, contact_email = email, contact_adress = adress, contact_birthday=birthday)
-                form.save()
-                forma = Phone(phone = phone, contact = form)
-
-                forma.save()
-                return redirect('/contacts/')
-    else:    
-        form = ContactForm()
+            phone = form1.cleaned_data.get('phone')
+            phone_chek(phone)
+            form = Contact(user=user, contact_name=name, contact_email=email,
+                           contact_adress=adress, contact_birthday=birthday)
+            form.save()
+            form = Phone(phone=phone, contact=form)
+            form.save()
+            return redirect('/contacts/')
+        else:
+            return render(request, 'contacts/add_contact.html', {'form': form, 'form1': form1})
+    else:
+        form = ContactForm(initial={'user': request.user})
         form1 = PhoneForm()
-        return render(request, 'contacts/add_contact.html', {'form': form, 'form1':form1})
+        return render(request, 'contacts/add_contact.html', {'form': form, 'form1': form1})
 
+
+@login_required
 def show_all(request):
-    contact_list = Phone.objects.all()
-    #print(contact_list)
+    contact_list = Contact.objects.filter(
+        user_id=request.user.id)
     template = loader.get_template('contacts/show_all.html')
     context = {
         'record_list': contact_list
     }
     return HttpResponse(template.render(context, request))
 
+
 class ContactDetailView(DetailView):
     model = Contact
     template_name = 'contacts/detail_view.html'
     context_object_name = 'contact'
 
+
 class ContactUpdateView(UpdateView):
     model = Contact
     template_name = 'contacts/update_contact.html'
-    
-    
+
     fields = ['contact_email', 'contact_birthday', 'contact_adress']
+
 
 class ContactDeleteView(DeleteView):
     model = Contact
     success_url = '/contacts/show_contacts'
     template_name = 'contacts/delete_view.html'
 
+
+@login_required
 def search(request):
-    
+
     if request.method == 'POST':
         contact_list = Contact.objects.all()
-        #contact = Contact.objects.get(headline__contains = )
+        # contact = Contact.objects.get(headline__contains = )
         form = SearchForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('contact_name')
-            
-            #print(name)
+
+            # print(name)
             try:
-                contact = Contact.objects.get(contact_name__contains = name)
-                     
+                contact = Contact.objects.get(contact_name__contains=name)
+
                 template = loader.get_template('contacts/show_contact.html')
                 context = {'record_list': contact}
                 return HttpResponse(template.render(context, request))
             except:
                 form = SearchForm()
                 return render(request, 'contacts/search_contact.html', {'form': form})
-            
-                
-            #return redirect('/contacts/')
+
+            # return redirect('/contacts/')
     else:
         form = SearchForm()
         return render(request, 'contacts/search_contact.html', {'form': form})
 
 
+@login_required
 def add_phone(request, id):
     form = PhoneForm()
-    #print(id)
+    # print(id)
 
     try:
         person = Contact.objects.get(id=id)
-        #print(1)
- 
+        # print(1)
+
         if request.method == "POST":
-            #print(2)
+            # print(2)
             forma = PhoneForm(request.POST)
-            #print(6)
+            # print(6)
             print(forma)
             phone = forma.cleaned_data.get('phone')
-            #print(3)
-            phone1 = Phone(phone = phone, contact = person)
+            # print(3)
+            phone1 = Phone(phone=phone, contact=person)
             phone1.save()
             return HttpResponseRedirect("/")
         else:
-            #print(4)
+            # print(4)
             return render(request, 'contacts/add_phone.html', {'form': form})
     except:
-        #print(5)
-    
+        # print(5)
+
         form = PhoneForm()
         return render(request, 'contacts/add_phone.html', {'form': form})
+
 
 class AddPhone(CreateView):
     model = Phone
     template_name = 'contacts/add_phone.html'
     fields = ['phone', 'contact']
-
-
-    
-    
-
-    
-
-
-
