@@ -1,21 +1,28 @@
 {% extends 'contacts/layout.html' %}
 
-{% block title %}Show all{% endblock %}
+{% block title %}Show all{% endblock title%}
 {% block header %}
 <h1>Contacts in your Adressbook, {{user.username|default:'Guest'}}</h1>
-{% endblock %}
+<li style = 'margin: 10px'><a href="{% url 'contacts:add-contact' %}">Add contact</a></li>
+<li style = 'margin: 10px'><a href="{% url 'contacts:show-contacts' %}">Show contacts</a></li>
+<li style = 'margin: 10px'><a href="{% url 'contacts:search-contact' %}">Search contacts</a></li>
+{% endblock header%}
 {% block content %}
 <div class="features">
-    <p>
-        <a class='btn btn-warning' type="submit" href='{% url "contacts:index" %}' target='_self'>Main page </a>
-        <br>
-        {% if record_list %}
-    <h2>All Contacts:</h2>
+    {% if mode %}
+    <h2>Found contacts in your Adressbook</h2>
+    {% else %}
+    <h2>All contacts in your Adressbook</h2>
+    {% endif %}
+
+    {{mode}}
+
+    {% if record_list %}
     <ul>
         {% for record in record_list %}
 
-        <li> {{ record }} --- {{record.phone_set.first}}
-            <a href="/contacts/show_contacts/{{record.id}}">Show detail</a>
+        <li> {{ record.contact_name }} ----{{record.phone_set.first}}
+            <a class='btn btn-warning' href="/contacts/show_contacts/{{record.id}}">Show detail</a>
         </li><br>
 
         {% endfor %}
@@ -23,6 +30,5 @@
     {% else %}
     <p>No contacts are available.</p>
     {% endif %}
-    </p>
 </div>
-{% endblock %}
+{% endblock content%}

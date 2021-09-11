@@ -9,11 +9,14 @@
 <div class="features">
     <p>
     <form action="" method="post">
-    <p>
-    {% csrf_token %}<br>
-    {{form}}<br>
-    <input type="submit" value="Register">
-    </p>
+        <p>
+            {% csrf_token %}
+            {%for err in form.errors %}
+            {{err}}
+            {% endfor %}
+            {{form.as_ul}}<br>
+            <input type="submit" value="Register">
+        </p>
     </form>
     </p>
 </div>

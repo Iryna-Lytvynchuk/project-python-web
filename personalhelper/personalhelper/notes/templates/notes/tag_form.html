@@ -1,5 +1,5 @@
-{% extends 'contacts/layout.html' %}
-{% block title %}Note list{% endblock %}
+{% extends "contacts/layout.html" %}
+{% block title %}Note{% endblock %}
 
 {% block header %}
 <h1 style='margin-right: 100px'>Your notes, {{user.username|default:'Guest'}}</h1>
@@ -8,23 +8,17 @@
 <li style = 'margin: 10px'><a href="{% url 'notes:tags' %}">Tags</a></li>
 <li style = 'margin: 10px'><a href="{% url 'notes:note-create' %}">Create Note</a></li>
 {% endblock %}
-
 {% block content %}
 <div class="features">
   <p>
-
-    {% if note_list %}
-  <ul>
-    {% for note in note_list %}
-    <li>
-      <a href="{{ note.get_absolute_url }}">{{ note.title }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>There are no notes in the profile.</p>
-  {% endif %}
+  <form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+  </form>
   </p>
-  <a class='btn btn-warning' type='submit' href="{% url 'notes:index' %}" target="_self">To notes</a>
-</div>
+  </div>
 {% endblock %}
+
